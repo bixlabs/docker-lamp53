@@ -38,7 +38,19 @@ ENV PHP_UPLOAD_MAX_FILESIZE 10M
 ENV PHP_POST_MAX_SIZE 10M
 
 # Add volumes for MySQL
-VOLUME  ["/etc/mysql", "/var/lib/mysql" ]
+VOLUME  ["/etc/mysql", "/var/lib/mysql", "/var/www/html" ]
+
+# Add PhantomJS
+
+RUN apt-get -y install libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev chrpath libssl-dev libxft-dev
+
+
+ENV PHANTOM_JS phantomjs-1.9.7-linux-x86_64
+ADD ${PHANTOM_JS}.tar.bz2 /usr/local/share/
+RUN ln -sf /usr/local/share/${PHANTOM_JS}/bin/phantomjs /usr/local/share/phantomjs
+RUN ln -sf /usr/local/share/${PHANTOM_JS}/bin/phantomjs /usr/local/bin/phantomjs
+RUN ln -sf /usr/local/share/${PHANTOM_JS}/bin/phantomjs /usr/bin/phantomjs
+RUN phantomjs --version
 
 EXPOSE 80 3306 25
 CMD ["/run.sh"]
