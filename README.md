@@ -1,4 +1,4 @@
-tutum-docker-lamp
+docker-lamp53
 =================
 
 Out-of-the-box LAMP image (PHP+MySQL+PhantomJS)
