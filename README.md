@@ -1,19 +1,18 @@
 tutum-docker-lamp
 =================
 
-Out-of-the-box LAMP image (PHP+MySQL)
+Out-of-the-box LAMP image (PHP+MySQL+PhantomJS)
 
 
 Usage
 -----
 
-To create the image `tutum/lamp`, execute the following command on the tutum-docker-lamp folder:
+Clone the repository
+	git clone https://github.com/bixsolutions/docker-lamp53
 
-	docker build -t tutum/lamp .
+To create the image `bix_com_uy/lamp53`, execute the following command on the tutum-docker-lamp folder:
 
-You can now push your new image to the registry:
-
-	docker push tutum/lamp
+	docker build -t bix_com_uy/lamp53:latest .
 
 
 Running your LAMP docker image
@@ -21,52 +20,17 @@ Running your LAMP docker image
 
 Start your image binding the external ports 80 and 3306 in all interfaces to your container:
 
-	docker run -d -p 80:80 -p 3306:3306 tutum/lamp
+	docker run -d -p 80:80 -p 3306:3306 -p 2222:22 \
+    		-v /path/to/project:/var/www/html \
+    		-v /path/to/project/logs:/var/log/apache2 \
+    		-v /path/to/mysql-data:/var/lib/mysql \
+    		bix_com_uy/lamp53:latest
 
 Test your deployment:
 
 	curl http://localhost/
 
 Hello world!
-
-
-Loading your custom PHP application
------------------------------------
-
-In order to replace the "Hello World" application that comes bundled with this docker image,
-create a new `Dockerfile` in an empty folder with the following contents:
-
-	FROM tutum/lamp:latest
-	RUN rm -fr /app && git clone https://github.com/username/customapp.git /app
-	EXPOSE 80 3306
-	CMD ["/run.sh"]
-
-replacing `https://github.com/username/customapp.git` with your application's GIT repository.
-After that, build the new `Dockerfile`:
-
-	docker build -t username/my-lamp-app .
-
-And test it:
-
-	docker run -d -p 80:80 -p 3306:3306 username/my-lamp-app
-
-Test your deployment:
-
-	curl http://localhost/
-
-That's it!
-
-
-Connecting to the bundled MySQL server from within the container
-----------------------------------------------------------------
-
-The bundled MySQL server has a `root` user with no password for local connections.
-Simply connect from your PHP code with this user:
-
-	<?php
-	$mysql = new mysqli("localhost", "root");
-	echo "MySQL Server info: ".$mysql->host_info;
-	?>
 
 
 Connecting to the bundled MySQL server from outside the container
@@ -110,16 +74,3 @@ set the environment variable `MYSQL_PASS` to your specific password when running
 You can now test your new admin password:
 
 	mysql -uadmin -p"mypass"
-
-
-Disabling .htaccess
---------------------
-
-`.htaccess` is enabled by default. To disable `.htaccess`, you can remove the following contents from `Dockerfile`
-
-	# config to enable .htaccess
-    ADD apache_default /etc/apache2/sites-available/000-default.conf
-    RUN a2enmod rewrite
-
-
-**by http://www.tutum.co**
